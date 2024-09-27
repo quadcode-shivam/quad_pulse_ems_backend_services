@@ -1,0 +1,235 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "7Searchppc API Documentation",
+        "description": "7Searchppc API version-2",
+        "contact": {
+            "email": "admin@admin.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "2.0"
+    },
+    "servers": [
+        {
+            "url": "https://services.7searchppc.in",
+            "description": "Development server"
+        },
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local server"
+        }
+    ],
+    "paths": {
+        "/api/swag": {
+            "get": {
+                "tags": [
+                    "Swag"
+                ],
+                "summary": "Get list of swag items",
+                "description": "Returns a list of swag items.",
+                "operationId": "ed51394b796cad02b15d1868ea00b2a2",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Swag"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Swag"
+                ],
+                "summary": "Create a new swag item",
+                "description": "Creates a new swag item.",
+                "operationId": "78403c7de7f7ebe7ba4b6a18f3ddd8fd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "branch"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Name of the swag item",
+                                        "type": "string",
+                                        "example": "Cool T-Shirt"
+                                    },
+                                    "branch": {
+                                        "description": "Branch of the swag item",
+                                        "type": "string",
+                                        "example": "Clothing"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Swag"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/swag/{id}": {
+            "get": {
+                "tags": [
+                    "Swag"
+                ],
+                "summary": "Get a swag item by ID",
+                "description": "Returns a swag item by ID.",
+                "operationId": "5e6799d15ae84acfd0eca42605c90d10",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Swag"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Swag"
+                ],
+                "summary": "Update a swag item",
+                "description": "Updates a swag item by ID.",
+                "operationId": "13690289f806b75949a575285061fcc1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "branch"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "description": "Name of the swag item",
+                                        "type": "string",
+                                        "example": "Cool T-Shirt"
+                                    },
+                                    "branch": {
+                                        "description": "Branch of the swag item",
+                                        "type": "string",
+                                        "example": "Clothing"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Swag"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Swag"
+                ],
+                "summary": "Delete a swag item",
+                "description": "Deletes a swag item by ID.",
+                "operationId": "f7200242b53ccad5cfcea96035f85592",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Swag": {
+                "title": "Swag",
+                "required": [
+                    "name",
+                    "branch"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Cool T-Shirt"
+                    },
+                    "branch": {
+                        "type": "string",
+                        "example": "Clothing"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}
