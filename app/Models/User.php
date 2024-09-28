@@ -20,6 +20,7 @@ class User extends Authenticatable
         'role', 
         'trash',
         'user_id',
+        'secret_key',
     ];
 
     protected $hidden = [

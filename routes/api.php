@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TaskController;
@@ -12,16 +13,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DesignationPositionController;
 
-// User Routes
-Route::post('user/login', [UserController::class, 'login']); // Assuming you have a login method
-
+Route::post('register', [UserController::class, 'register']);
+Route::post('login', [UserController::class, 'login']);
 // Employee Routes
 Route::post('admin/employees/create', [EmployeeController::class, 'createEmployee']);
 Route::post('admin/employees/fetch', [EmployeeController::class, 'fetchEmployees']);
 Route::post('admin/employees/remove', [EmployeeController::class, 'updateTrashStatus']);
 
 // Attendance Routes
-Route::post('admin/attendance/create', [AttendanceController::class, 'create']);
+Route::post('/check-in', [CheckinController::class, 'checkIn']);
+Route::post('/check-out', [CheckinController::class, 'checkOut']);
+
+// New route to fetch check-in records
+Route::post('/checkrecord', [CheckinController::class, 'getCheckIns']);
+
 Route::post('admin/attendance/fetch', [AttendanceController::class, 'fetchAttendance']);
 Route::post('admin/attendance/action', [AttendanceController::class, 'actionAttendance']);
 
