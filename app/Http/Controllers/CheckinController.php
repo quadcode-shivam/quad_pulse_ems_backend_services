@@ -102,7 +102,7 @@ class CheckinController extends Controller
                     'check_out_time' => $checkOutTime,
                     'check_out_info' => $request->input('check_out_info'),  // Optional description
                     'status' => $status,
-                ]);
+                ]); 
 
                 // Find the corresponding attendance record for today
                 $attendance = Attendance::where('user_id', $user->user_id)
