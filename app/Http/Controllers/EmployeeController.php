@@ -32,14 +32,14 @@ class EmployeeController extends Controller
         $userId = 'EMP' . strtoupper(substr($request->user_name, 0, 3)) . $randomNumber;
 
         // Set current date and time
-        $currentDateTime =  Carbon::now('Asia/Kolkata');
+        $currentDateTime = Carbon::now('Asia/Kolkata');
 
         // Create user
         $user = User::create([
-            'user_id' => $userId,  // Ensure user_id is included
+            'user_id' => $userId, // Ensure user_id is included
             'name' => $request->user_name,
             'email' => $request->user_email,
-            'password' => "123456",  // Make sure to set a password
+            'password' => "123456", // Make sure to set a password
             'country' => $request->country,
             'state' => $request->state,
             'mobile' => $request->phone,
@@ -53,7 +53,6 @@ class EmployeeController extends Controller
             'trash' => 0,
         ]);
 
-    
         // Prepare response data
         $responseData = [
             'user' => [
@@ -81,7 +80,7 @@ class EmployeeController extends Controller
         // Validate request parameters
         $validator = Validator::make($request->all(), [
             'sort_order' => 'in:asc,desc',
-            'col' => 'string|in:user_id,name,email,date_hired,created_at,status',  // include columns you want to sort by
+            'col' => 'string|in:user_id,name,email,date_hired,created_at,status', // include columns you want to sort by
             'limit' => 'integer|min:1|max:100',
             'page' => 'integer|min:1',
             'status' => 'in:active,inactive',
@@ -100,7 +99,7 @@ class EmployeeController extends Controller
         $page = $request->get('page', 1);
 
         // Build the query using Eloquent
-        $query = User::where('trash', 0);  // Only retrieve non-trashed users
+        $query = User::where('trash', 0); // Only retrieve non-trashed users
         // Filter by user status if provided
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -134,7 +133,7 @@ class EmployeeController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Invalid parameters',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 400);
         }
 
@@ -155,7 +154,7 @@ class EmployeeController extends Controller
 
             return response()->json([
                 'message' => 'Error updating trash status',
-                'error' => 'An internal server error occurred.'
+                'error' => 'An internal server error occurred.',
             ], 500);
         }
     }
