@@ -9,11 +9,10 @@ class AddColumnsToUsersTable extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('position')->nullable(); // Add position
-            $table->string('designation')->nullable(); // Add designation
-            $table->decimal('salary', 10, 2)->nullable(); // Add salary
-            $table->date('date_hired')->nullable(); // Add date_hired
-            // The created_at and updated_at columns are already handled by timestamps()
+            $table->string('position')->nullable();
+            $table->string('designation')->nullable();
+            $table->decimal('salary', 10, 2)->nullable(); 
+            $table->date('date_hired')->nullable(); 
         });
     }
 
