@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +21,12 @@ class Attendance extends Model
     // Define the relationship with the Employee model
     public function employee()
     {
-        // Link the 'user_id' in the Attendance model to the 'user_id' in the Employee model
-        return $this->belongsTo(Employee::class, 'user_id', 'user_id');
+        return $this->belongsTo(Employee::class, 'user_id', 'user_id'); // Check foreign key mapping
+    }
+
+    // Optional: if you need the relationship to the User
+    public function user()
+    {
+        return $this->hasOneThrough(User::class, Employee::class, 'user_id', 'user_id', 'user_id', 'user_id');
     }
 }

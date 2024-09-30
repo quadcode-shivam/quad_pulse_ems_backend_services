@@ -10,48 +10,50 @@ use Illuminate\Http\Request;
 
 class CheckinController extends Controller
 {
-    // Check-in method
     public function checkIn(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'user_id' => 'required|string|exists:users,user_id',  // Validate user_id exists in users table
-            'check_in_info' => 'nullable|string',  // Optional check-in info
+{
+    // Validate the request
+    $request->validate([
+        'user_id' => 'required|string|exists:users,user_id',  // Validate user_id exists in users table
+        'check_in_info' => 'nullable|string',  // Optional check-in info
+    ]);
+
+    // Retrieve the user
+    $user = User::where('user_id', $request->user_id)->first();
+
+    // Ensure the user is active and not trashed
+    if ($user && $user->trash == 0) {
+        // Check if there's already a check-in for today without a check-out
+        $existingCheckIn = CheckIn::where('employee_id', $user->user_id)
+            ->whereNull('check_out_time')
+            ->whereDate('check_in_time', Carbon::now('Asia/Kolkata')->toDateString())
+            ->first();
+
+        if ($existingCheckIn) {
+            return response()->json(['message' => 'Please check out first.'], 403);
+        }
+
+        $nowIndia = Carbon::now('Asia/Kolkata');
+        $status = $nowIndia->format('H:i') > '10:00' ? 'Late' : 'Active';
+
+        // Store the new check-in record
+        $checkIn = CheckIn::create([
+            'employee_id' => $user->user_id,
+            'status' => $status,
+            'user_name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->role,
+            'check_in_time' => $nowIndia,
+            'check_in_info' => $request->input('check_in_info'),  // Optional description
         ]);
 
-        // Retrieve the user
-        $user = User::where('user_id', $request->user_id)->first();
+        // Check if attendance record already exists for today
+        $existingAttendance = Attendance::where('user_id', $user->user_id)
+            ->whereDate('attendance_date', $nowIndia->toDateString())
+            ->first();
 
-        // Ensure the user is active and not trashed
-        if ($user && $user->trash == 0) {
-            // Check if there's already a check-in for today without a check-out
-            $existingCheckIn = CheckIn::where('employee_id', $user->user_id)
-                ->whereNull('check_out_time')
-                ->whereDate('check_in_time', Carbon::now('Asia/Kolkata')->toDateString())  // Consider only today's check-ins
-                ->first();
-
-            // If a check-in already exists for today, return an error (user needs to check out first)
-            if ($existingCheckIn) {
-                return response()->json(['message' => 'Please check out first.'], 403);
-            }
-
-            $nowIndia = Carbon::now('Asia/Kolkata');  // Current time in IST
-
-            // Determine the status based on check-in time
-            $status = $nowIndia->format('H:i') > '10:00' ? 'Late' : 'Active';
-
-            // Store the new check-in record
-            $checkIn = CheckIn::create([
-                'employee_id' => $user->user_id,
-                'status' => $status,
-                'user_name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'check_in_time' => $nowIndia,
-                'check_in_info' => $request->input('check_in_info'),  // Optional description
-            ]);
-
-            // Store the attendance record
+        // Only create a new attendance record if it doesn't exist
+        if (!$existingAttendance) {
             Attendance::create([
                 'user_id' => $user->user_id,
                 'attendance_date' => $nowIndia->toDateString(),  // Store today's date
@@ -59,15 +61,17 @@ class CheckinController extends Controller
                 'check_in_description' => 'Entry Successful',  // Optional description
                 'status' => $status,
             ]);
-
-            return response()->json([
-                'message' => 'Check-in successful',
-                'check_in' => $checkIn,
-            ], 200);
         }
 
-        return response()->json(['message' => 'User is not active or is trashed'], 403);
+        return response()->json([
+            'message' => 'Check-in successful',
+            'check_in' => $checkIn,
+        ], 200);
     }
+
+    return response()->json(['message' => 'User is not active or is trashed'], 403);
+}
+
 
     // Check-out method
     public function checkOut(Request $request)
@@ -100,9 +104,9 @@ class CheckinController extends Controller
                 // Update the check-in record with the check-out time and status
                 $checkIn->update([
                     'check_out_time' => $checkOutTime,
-                    'check_out_info' => $request->input('check_out_info'),  // Optional description
+                    'check_out_info' => "Exit Successful",  // Optional description
                     'status' => $status,
-                ]); 
+                ]);
 
                 // Find the corresponding attendance record for today
                 $attendance = Attendance::where('user_id', $user->user_id)
@@ -130,6 +134,7 @@ class CheckinController extends Controller
 
         return response()->json(['message' => 'User is not active or is trashed'], 403);
     }
+
     // Fetch check-in records method
     public function getCheckIns(Request $request)
     {

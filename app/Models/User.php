@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -10,6 +9,7 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
+        'user_id',
         'name', 
         'email', 
         'password', 
@@ -19,8 +19,14 @@ class User extends Authenticatable
         'mobile', 
         'role', 
         'trash',
-        'user_id',
         'secret_key',
+        'status',
+        'position',        // Add position
+        'designation',     // Add designation
+        'salary',          // Add salary
+        'date_hired',      // Add date_hired
+        'created_at',      // Add created_at
+        'updated_at',      // Add updated_at
     ];
 
     protected $hidden = [
@@ -28,9 +34,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $primaryKey = 'id'; 
+
     public function employee()
     {
-        return $this->hasOne(Employee::class);
+        return $this->hasOne(Employee::class, 'user_id', 'user_id'); 
     }
 
     public function notifications()

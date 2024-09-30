@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -18,12 +17,12 @@ class Employee extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'user_id'); // Specify the foreign key correctly
     }
 
     public function attendance()
     {
-        return $this->hasMany(Attendance::class);
+        return $this->hasMany(Attendance::class, 'user_id', 'user_id'); // Ensure the foreign key matches
     }
 
     public function leaves()
@@ -36,3 +35,4 @@ class Employee extends Model
         return $this->hasMany(Task::class);
     }
 }
+
