@@ -135,39 +135,68 @@ class CheckinController extends Controller
         return response()->json(['message' => 'User is not active or is trashed'], 403);
     }
 
-    // Fetch check-in records method
-    public function getCheckIns(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'user_id' => 'nullable|string|exists:users,user_id',  // Validate user_id if provided
-        ]);
 
-        // Fetch check-ins for a specific user if user_id is provided
-        if ($request->has('user_id')) {
-            $checkIns = CheckIn::where('employee_id', $request->user_id)
-                ->orderBy('check_in_time', 'desc')  // Order by latest check-ins first
-                ->take(20)  // Limit to the last 20 records
-                ->get();
+public function getCheckIns(Request $request)
+{
+    // Validate the request
+    $request->validate([
+        'user_id' => 'nullable|string|exists:users,user_id', // Validate user_id if provided
+    ]);
 
-            if ($checkIns->isEmpty()) {
-                return response()->json(['message' => 'No check-ins found for this user'], 404);
-            }
-
-            return response()->json([
-                'message' => 'Check-ins retrieved successfully',
-                'check_ins' => $checkIns,
-            ], 200);
-        }
-
-        // Fetch the last 20 check-ins for all users
-        $checkIns = CheckIn::orderBy('check_in_time', 'desc')  // Latest check-ins first
-            ->take(20)  // Limit to the last 20 records
+    // If user_id is provided, fetch the check-ins for the user
+    if ($request->has('user_id')) {
+        $checkIns = CheckIn::where('employee_id', $request->user_id)
+            ->orderBy('check_in_time', 'desc') // Order by latest check-ins first
+            ->take(20) // Limit to the last 20 records
             ->get();
 
+        if ($checkIns->isEmpty()) {
+            return response()->json([
+                'message' => 'No check-ins found for this user',
+                'check_ins' => [],
+                'average_check_in_time' => null,
+                'average_check_out_time' => null,
+                'last_check_out_time' => null
+            ], 404);
+        }
+
+        // Convert check_in_time and check_out_time to timestamps
+        $checkInTimestamps = $checkIns->pluck('check_in_time')->map(function ($time) {
+            return Carbon::parse($time)->timestamp;
+        });
+
+        $checkOutTimestamps = $checkIns->pluck('check_out_time')->filter()->map(function ($time) {
+            return Carbon::parse($time)->timestamp;
+        });
+
+        // Calculate average timestamps
+        $averageCheckInTimestamp = $checkInTimestamps->average();
+        $averageCheckOutTimestamp = $checkOutTimestamps->average();
+
+        // Convert average timestamps back to datetime
+        $averageCheckInTime = $averageCheckInTimestamp ? Carbon::createFromTimestamp($averageCheckInTimestamp)->toDateTimeString() : null;
+        $averageCheckOutTime = $averageCheckOutTimestamp ? Carbon::createFromTimestamp($averageCheckOutTimestamp)->toDateTimeString() : null;
+
+        // Get last check-out time (if available)
+        $lastCheckOutTime = $checkIns->first()->check_out_time;
+
         return response()->json([
-            'message' => 'All check-ins retrieved successfully',
+            'message' => 'Check-ins retrieved successfully',
             'check_ins' => $checkIns,
+            'average_check_in_time' => $averageCheckInTime,
+            'average_check_out_time' => $averageCheckOutTime,
+            'last_check_out_time' => $lastCheckOutTime,
         ], 200);
     }
+
+    // If no user_id is provided, return a default message
+    return response()->json([
+        'message' => 'No user_id provided or no check-ins found',
+        'check_ins' => [],
+        'average_check_in_time' => null,
+        'average_check_out_time' => null,
+        'last_check_out_time' => null,
+    ], 404);
+}
+
 }

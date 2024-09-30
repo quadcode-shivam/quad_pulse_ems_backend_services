@@ -59,7 +59,7 @@ class UserController extends Controller
         $user->save();  // Save the updated user
     
         // Fetch the user with their associated employee data
-        $userWithEmployee = User::with('employee')->where('user_id', $user->user_id)->first();
+        $userWithEmployee = User::where('user_id', $user->user_id)->first();
         // Check if user has an associated employee record
         if (!$userWithEmployee) {
             return response()->json(['message' => 'User does not have associated employee data'], 404);

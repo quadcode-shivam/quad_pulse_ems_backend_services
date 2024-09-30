@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -27,18 +28,18 @@ class EmployeeController extends Controller
             return response()->json(['message' => 'Invalid parameters', 'errors' => $validator->errors()], 400);
         }
 
-        $randomNumber = rand(1000, 9999);
-        $userId = 'EMP' . substr($request->user_name, 0, 3) . $randomNumber;
+        $randomNumber = rand(10000, 99999);
+        $userId = 'EMP' . strtoupper(substr($request->user_name, 0, 3)) . $randomNumber;
 
         // Set current date and time
-        $currentDateTime = now();
+        $currentDateTime =  Carbon::now('Asia/Kolkata');
 
         // Create user
         $user = User::create([
             'user_id' => $userId,  // Ensure user_id is included
             'name' => $request->user_name,
             'email' => $request->user_email,
-            'password' => bcrypt('defaultPassword'),  // Make sure to set a password
+            'password' => "123456",  // Make sure to set a password
             'country' => $request->country,
             'state' => $request->state,
             'mobile' => $request->phone,
@@ -46,19 +47,13 @@ class EmployeeController extends Controller
             'role' => $request->account_type,
             'created_at' => $currentDateTime,
             'updated_at' => $currentDateTime,
+            'position' => $request->position,
+            'designation' => $request->designation,
+            'date_hired' => $currentDateTime,
             'trash' => 0,
         ]);
 
-        // Create employee
-        $employee = Employee::create([
-            'user_id' => $userId,
-            'position' => $request->position,
-            'designation' => $request->designation,
-            'hire_date' => $currentDateTime,
-            'created_at' => $currentDateTime,
-            'updated_at' => $currentDateTime,
-        ]);
-
+    
         // Prepare response data
         $responseData = [
             'user' => [
@@ -70,13 +65,11 @@ class EmployeeController extends Controller
                 'state' => $user->state,
                 'address' => $user->address,
                 'role' => $user->role,
-            ],
-            'employee' => [
-                'user_id' => $employee->user_id,
-                'position' => $employee->position,
-                'department' => $employee->department,
-                'hire_date' => $employee->hire_date,
-                'status' => $employee->status,
+                'user_id' => $user->user_id,
+                'position' => $user->position,
+                'department' => $user->department,
+                'hire_date' => $user->hire_date,
+                'status' => $user->status,
             ],
         ];
 
@@ -135,7 +128,7 @@ class EmployeeController extends Controller
     public function updateTrashStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer|exists:users,id',
+            'id' => 'required|exists:users,user_id',
         ]);
 
         if ($validator->fails()) {
@@ -149,7 +142,6 @@ class EmployeeController extends Controller
 
         try {
             $affectedRows = DB::table('users')
-                ->where('id', $userId)
                 ->update(['trash' => 1]);
 
             if ($affectedRows > 0) {
