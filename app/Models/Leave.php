@@ -11,6 +11,8 @@ class Leave extends Model
         'leave_type',
         'start_date',
         'end_date',
+        'description',   
+        'half_day_full_day',  
         'status',
     ];
 

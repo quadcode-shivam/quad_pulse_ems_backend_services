@@ -35,8 +35,9 @@ Route::get('/designations-and-positions', [DesignationPositionController::class,
 
 
 // Leave Routes
-Route::post('admin/leaves/create', [LeaveController::class, 'create']);
-Route::post('admin/leaves/fetch', [LeaveController::class, 'fetchLeaves']);
+Route::post('/apply-leave', [LeaveController::class, 'applyLeave']);
+
+Route::post('/leaves/fetch', [LeaveController::class, 'getLeavesByUserId']);
 Route::get('admin/leaves/{id}', [LeaveController::class, 'show']);
 Route::put('admin/leaves/{id}', [LeaveController::class, 'update']);
 Route::delete('admin/leaves/{id}', [LeaveController::class, 'destroy']);
