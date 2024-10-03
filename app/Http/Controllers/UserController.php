@@ -46,11 +46,9 @@ class UserController extends Controller
     
         // Find the user by email
         $user = User::where('email', $request->email)->first();
-    
-        // Compare plain text passwords
         if (!$user || $request->password !== $user->password) {
             // Return 401 Unauthorized if credentials are invalid
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Invalid credentials or user Not found'], 401);
         }
     
         // Update the user's secret key

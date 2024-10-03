@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\LeavePolicyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CheckinController;
+use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TaskController;
@@ -36,11 +38,18 @@ Route::get('/designations-and-positions', [DesignationPositionController::class,
 
 // Leave Routes
 Route::post('/apply-leave', [LeaveController::class, 'applyLeave']);
+Route::post('/all-holiday', [LeaveController::class, 'getAllHolidays']);
 
 Route::post('/leaves/fetch', [LeaveController::class, 'getLeavesByUserId']);
-Route::get('admin/leaves/{id}', [LeaveController::class, 'show']);
-Route::put('admin/leaves/{id}', [LeaveController::class, 'update']);
-Route::delete('admin/leaves/{id}', [LeaveController::class, 'destroy']);
+Route::post('/leaves/fetchAdmin', [LeaveController::class, 'getLeaves']);
+Route::post('leaves/updateStatus', [LeaveController::class, 'updateLeaveStatus']);
+
+Route::get('/leave-policies', [LeavePolicyController::class, 'index']);
+Route::put('/leave-policies/{id}', [LeavePolicyController::class, 'update']);
+// Fetch all company policies
+Route::get('company-policies', [CompanyPolicyController::class, 'index']);
+Route::post('company-policies', [CompanyPolicyController::class, 'store']);
+Route::put('company-policies/{id}', [CompanyPolicyController::class, 'update']);
 
 // Notification Routes
 Route::post('admin/notifications/fetch', [NotificationController::class, 'fetchNotifications']);

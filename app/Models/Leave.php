@@ -13,6 +13,7 @@ class Leave extends Model
         'end_date',
         'description',   
         'half_day_full_day',  
+        'total_leaves',  
         'status',
     ];
 
