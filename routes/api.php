@@ -52,16 +52,10 @@ Route::post('company-policies', [CompanyPolicyController::class, 'store']);
 Route::put('company-policies/{id}', [CompanyPolicyController::class, 'update']);
 
 // Notification Routes
-Route::post('admin/notifications/fetch', [NotificationController::class, 'fetchNotifications']);
-Route::get('admin/notifications/{id}', [NotificationController::class, 'show']);
-Route::delete('admin/notifications/{id}', [NotificationController::class, 'destroy']);
+Route::get('tasks/fetch', [TaskController::class, 'fetchTasks']);
+Route::post('tasks/create', [TaskController::class, 'createTask']);
+Route::post('tasks/update', [TaskController::class, 'updateTask']);
 
-// Task Routes
-Route::post('admin/tasks/create', [TaskController::class, 'create']);
-Route::post('admin/tasks/fetch', [TaskController::class, 'fetchTasks']);
-Route::get('admin/tasks/{id}', [TaskController::class, 'show']);
-Route::put('admin/tasks/{id}', [TaskController::class, 'update']);
-Route::delete('admin/tasks/{id}', [TaskController::class, 'destroy']);
 
 // Task Comment Routes
 Route::post('admin/task-comments/fetch', [TaskCommentController::class, 'fetchTaskComments']);

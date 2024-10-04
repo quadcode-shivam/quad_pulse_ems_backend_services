@@ -17,11 +17,13 @@ class Task extends Model
 
     public function employee()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(User::class); // Assuming User is your employee model
     }
 
     public function comments()
     {
         return $this->hasMany(TaskComment::class);
     }
+
 }
+

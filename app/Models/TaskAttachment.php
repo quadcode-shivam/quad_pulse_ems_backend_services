@@ -3,21 +3,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TaskComment extends Model
+class TaskAttachment extends Model
 {
     protected $fillable = [
         'task_id',
-        'employee_id',
-        'comment',
+        'file_name',
+        'file_path',
     ];
 
     public function task()
     {
         return $this->belongsTo(Task::class);
-    }
-
-    public function employee()
-    {
-        return $this->belongsTo(User::class); // Assuming User is your employee model
     }
 }

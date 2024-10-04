@@ -76,13 +76,9 @@ class UserController extends Controller
     // Token Generation Method
     private function generateToken($user)
     {
-        // Create a unique token
-        $randomString = bin2hex(random_bytes(16));  // Generate a random string
-        $token = hash('sha256', $user->id . $user->email . $randomString);  // Create a hash using user ID and email
-
-        // Store the token in the database if needed (optional)
-        $user->update(['api_token' => $token]);  // Assuming you have an 'api_token' field in the users table
-
+        $randomString = bin2hex(random_bytes(16));  
+        $token = hash('sha256', $user->id . $user->email . $randomString); 
+        $user->update(['api_token' => $token]);  
         return $token;
     }
 
