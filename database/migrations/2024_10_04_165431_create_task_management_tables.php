@@ -16,10 +16,10 @@ class CreateTaskManagementTables extends Migration
             $table->text('description')->nullable();
             $table->enum('status', [
                 'todo', 
-                'in-progress', 
-                'ready-for-staging', 
+                'in progress', 
+                'ready for staging', 
                 'staging', 
-                'ready-for-production', 
+                'ready for production', 
                 'production', 
                 'done', 
                 'block'
