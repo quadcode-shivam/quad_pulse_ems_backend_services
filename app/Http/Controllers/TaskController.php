@@ -94,11 +94,5 @@ class TaskController extends Controller
         ]);
     }
     
-    // Fetch task history for a specific task
-    public function fetchTaskHistory($taskId)
-    {
-        $history = TaskHistory::where('task_id', $taskId)->with('employee')->get(); // Assuming you have a relationship with the User model
-
-        return response()->json($history);
-    }
+  
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\SettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DesignationPositionController;
+use App\Http\Controllers\TaskHistoryController;
 
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
@@ -55,6 +56,8 @@ Route::put('company-policies/{id}', [CompanyPolicyController::class, 'update']);
 Route::get('tasks/fetch', [TaskController::class, 'fetchTasks']);
 Route::post('tasks/create', [TaskController::class, 'createTask']);
 Route::post('tasks/update', [TaskController::class, 'updateTask']);
+
+Route::post('/task-history', [TaskHistoryController::class, 'getTaskHistory']);
 
 
 // Task Comment Routes
