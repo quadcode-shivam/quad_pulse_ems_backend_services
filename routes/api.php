@@ -58,7 +58,10 @@ Route::post('tasks/create', [TaskController::class, 'createTask']);
 Route::post('tasks/update', [TaskController::class, 'updateTask']);
 
 Route::post('/task-history', [TaskHistoryController::class, 'getTaskHistory']);
-
+Route::post('/comments-fetch', [TaskCommentController::class, 'fetchComments']); // Fetch comments
+Route::post('/comments-create', [TaskCommentController::class, 'createComment']); // Create comment
+Route::post('/comments-update', [TaskCommentController::class, 'updateComment']); // Update comment
+Route::post('/comments-delete', [TaskCommentController::class, 'deleteComment']); // Delete comment
 
 // Task Comment Routes
 Route::post('admin/task-comments/fetch', [TaskCommentController::class, 'fetchTaskComments']);
