@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sprint;
 use App\Models\Task;
 use App\Models\TaskHistory; // Import the TaskHistory model
 use Illuminate\Http\Request;
@@ -14,17 +15,74 @@ class TaskController extends Controller
         $validatedData = $request->validate([
             'employee_id' => 'nullable|exists:users,user_id',
         ]);
-
+    
+        // Start the query builder for tasks
+        $tasksQuery = Task::query();
+    
+        // Check if an employee_id is provided
         if (isset($validatedData['employee_id'])) {
-            $tasks = Task::where('employee_id', $validatedData['employee_id'])
-                ->with('employee')
-                ->get();
-        } else {
-            $tasks = Task::with('employee')->get();
+            // Filter tasks based on employee_id
+            $tasksQuery->where('employee_id', $validatedData['employee_id']);
         }
-
-        return response()->json($tasks);
+    
+        // Fetch tasks along with their associated sprints using a left join
+        $tasks = $tasksQuery->leftJoin('sprints as s', 'tasks.sprint_id', '=', 's.id')
+            ->select(
+                'tasks.*',         // Select all task fields
+                's.id as sprint_id',      // Select sprint id
+                's.name as sprint_name',  // Select sprint name
+                's.start_date',          // Select sprint start date
+                's.end_date',            // Select sprint end date
+                's.goal'                 // Select sprint goal
+            )
+            ->get();
+    
+        // Fetch sprints based on the same employee_id (if applicable)
+        $sprints = Sprint::when(isset($validatedData['employee_id']), function($query) use ($validatedData) {
+            return $query->where('employee_id', $validatedData['employee_id']);
+        })->get();
+    
+        // Initialize an array to structure the response
+        $sprintTasks = [];
+    
+        // Group tasks by their sprint_id
+        foreach ($tasks as $task) {
+            $sprintId = $task->sprint_id;
+            
+            // If the sprint is not already in the array, add it
+            if (!isset($sprintTasks[$sprintId])) {
+                $sprintTasks[$sprintId] = [
+                    'id' => $task->sprint_id,
+                    'name' => $task->sprint_name,
+                    'goal' => $task->goal,
+                    'start_date' => $task->start_date,
+                    'end_date' => $task->end_date,
+                    'tasks' => [] // Initialize the tasks array for this sprint
+                ];
+            }
+    
+            // Add the task to the corresponding sprint
+            $sprintTasks[$sprintId]['tasks'][] = [
+                'id' => $task->id,
+                'employee_id' => $task->employee_id,
+                'title' => $task->title,
+                'description' => $task->description,
+                'status' => $task->status,
+                'priority' => $task->priority,
+                'due_date' => $task->due_date,
+                'created_at' => $task->created_at,
+                'updated_at' => $task->updated_at,
+            ];
+        }
+    
+        // Reset the array keys and convert it to a plain array
+        $sprintTasks = array_values($sprintTasks);
+    
+        return response()->json([
+            "sprints" => $sprintTasks,
+        ]);
     }
+    
 
     // Create a new task and log the action in TaskHistory
     public function createTask(Request $request)
