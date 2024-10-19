@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\Attendance; // Correctly import the Attendance model
-
 
 class AttendanceController extends Controller
 {
-    
     public function createAttendance(Request $request)
     {
         $request->validate([
-            'employee_id' => 'required|exists:employees,id',  // Validate that employee exists
+            'employee_id' => 'required|exists:employees,id',
             'date' => 'required|date',
             'status' => 'required|in:present,absent,late',
         ]);
@@ -29,79 +28,60 @@ class AttendanceController extends Controller
         ], 201);
     }
 
-    
-
     public function fetchAttendance(Request $request)
     {
-        // Set default values for sorting and pagination
         $sort_order = $request->sort_order ?? 'asc';
-        $col = $request->col ?? 'attendance_date'; // Sort by attendance_date by default
+        $col = $request->col ?? 'attendance_date';
         $limit = $request->limit ?? 10;
         $page = $request->page ?? 1;
-    
+
         $pg = $page - 1;
         $start = ($pg > 0) ? $limit * $pg : 0;
-    
-        // Initialize query for attendance data
-        $query = Attendance::query(); // Start with a query builder instance
-    
-        // Apply filters if provided
+
+        $query = Attendance::query();
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-    
+
         if ($request->filled('startDate') && $request->filled('endDate')) {
-            $query->whereDate('attendance_date', '>=', $request->startDate)
-                  ->whereDate('attendance_date', '<=', $request->endDate);
+            $query
+                ->whereDate('attendance_date', '>=', Carbon::parse($request->startDate))
+                ->whereDate('attendance_date', '<=', Carbon::parse($request->endDate)->addDay());
         }
-    
-        // Total rows for pagination
-        $totalRows = $query->count();
-    
-        // Fetch attendance records with sorting and pagination
+
         $attendance = $query
+            ->join('users', 'attendances.user_id', '=', 'users.user_id')  
+            ->select('attendances.*', 'users.name as user_name', 'users.email as user_email') 
             ->orderBy($col, $sort_order)
             ->offset($start)
             ->limit($limit)
-            ->get([
-                'id',
-                'user_id',
-                'attendance_date',
-                'check_in_time',
-                'check_in_description',
-                'check_out_time',
-                'check_out_description',
-                'status',
-                'created_at',
-                'updated_at'
-            ]);
-    
-        // Calculate the counts for each status
+            ->get();
+
+        $totalRows = $query->count();
+
         $statuses = ['absent', 'halfday', 'fullday', 'late', 'present'];
         $statusCounts = [];
-    
+
         foreach ($statuses as $status) {
             $statusCounts[$status] = Attendance::where('status', $status)
                 ->when($request->filled('startDate') && $request->filled('endDate'), function ($query) use ($request) {
-                    $query->whereDate('attendance_date', '>=', $request->startDate)
-                          ->whereDate('attendance_date', '<=', $request->endDate);
+                    $query
+                        ->whereDate('attendance_date', '>=', Carbon::parse($request->startDate))
+                        ->whereDate('attendance_date', '<=', Carbon::parse($request->endDate)->addDay());
                 })
                 ->count();
         }
-    
-        // Return the response with attendance records and status counts
+
         return response()->json([
             'message' => 'Attendance records retrieved successfully',
             'data' => $attendance,
             'total' => $totalRows,
-            'totals' => $statusCounts, // Include status counts
+            'totals' => $statusCounts,
             'current_page' => $page,
             'per_page' => $limit,
         ], 200);
     }
-    
-
-    
 
     /**
      * Update an attendance record.

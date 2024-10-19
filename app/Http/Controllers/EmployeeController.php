@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Employee;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -104,7 +103,7 @@ class EmployeeController extends Controller
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
-
+        
         // Filter by date range if both start and end dates are provided
         if ($request->has('start_date') && $request->has('end_date')) {
             $query->whereBetween('created_at', [$request->start_date, $request->end_date]);

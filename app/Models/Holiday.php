@@ -10,5 +10,5 @@ class Holiday extends Model
     protected $table = 'ind_holiday';
 
     // Allow mass assignment for the columns
-    protected $fillable = ['holiday_name', 'holiday_desc', 'holiday_date'];
+    protected $fillable = ['title', 'start_date', 'end_date','description'];
 }
