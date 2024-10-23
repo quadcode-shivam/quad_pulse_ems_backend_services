@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\LeavePolicyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeController;
@@ -67,6 +68,12 @@ Route::post('/comments-delete', [TaskCommentController::class, 'deleteComment'])
 Route::post('admin/task-comments/fetch', [TaskCommentController::class, 'fetchTaskComments']);
 Route::get('admin/task-comments/{id}', [TaskCommentController::class, 'show']);
 Route::delete('admin/task-comments/{id}', [TaskCommentController::class, 'destroy']);
+
+Route::post('/appointments', [AppointmentController::class, 'fetchlist']);
+Route::post('/appointments/store', [AppointmentController::class, 'store']);
+Route::post('/appointments/update', [AppointmentController::class, 'update']);
+Route::post('/appointments/remove', [AppointmentController::class, 'Remove']);
+Route::post('/appointments/status', [AppointmentController::class, 'statusUpdate']);
 
 // Setting Routes
 Route::post('admin/settings/fetch', [SettingController::class, 'fetchSettings']);
