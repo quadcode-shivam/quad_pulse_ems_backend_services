@@ -8,10 +8,14 @@ use Illuminate\Support\Facades\Validator;
 
 class AppointmentController extends Controller
 {
-    // Fetch list of appointments
-    public function fetchlist()
+    // Controller
+
+    public function fetchlist(Request $request)
     {
-        $appointments = Appointment::all();
+        $perPage = $request->input('limit', 10);  // Default to 10 if limit is not provided
+        $currentPage = $request->input('page', 1);  // Default to page 1
+
+        $appointments = Appointment::paginate($perPage, ['*'], 'page', $currentPage);
         return response()->json($appointments);
     }
 
@@ -25,7 +29,7 @@ class AppointmentController extends Controller
             'email' => 'required|email|unique:appointments,email',
             'reason' => 'required|string|max:500',
             'date' => 'required|date',
-            'time' => 'required|date_format:H:i', // Assuming time format is HH:mm
+            'time' => 'required|date_format:H:i',  // Assuming time format is HH:mm
             'status' => 'nullable|string|in:Pending,Accepted,Suspended',
         ]);
 
@@ -43,7 +47,7 @@ class AppointmentController extends Controller
     // Update the specified appointment in storage
     public function update(Request $request)
     {
-        $appointment = Appointment::findOrFail($request->id); // Assuming you're sending the ID in the request body
+        $appointment = Appointment::findOrFail($request->id);  // Assuming you're sending the ID in the request body
 
         // Validate incoming request data
         $validator = Validator::make($request->all(), [
@@ -52,7 +56,7 @@ class AppointmentController extends Controller
             'email' => 'required|email|unique:appointments,email,' . $appointment->id,
             'reason' => 'required|string|max:500',
             'date' => 'required|date',
-            'time' => 'required|date_format:H:i', // Assuming time format is HH:mm
+            'time' => 'required|date_format:H:i',  // Assuming time format is HH:mm
             'status' => 'nullable|string|in:Pending,Accepted,Suspended',
         ]);
 
@@ -70,7 +74,7 @@ class AppointmentController extends Controller
     // Remove the specified appointment from storage
     public function remove(Request $request)
     {
-        $appointment = Appointment::findOrFail($request->id); // Assuming you're sending the ID in the request body
+        $appointment = Appointment::findOrFail($request->id);  // Assuming you're sending the ID in the request body
         $appointment->delete();
 
         return response()->json(null, 204);
@@ -79,11 +83,11 @@ class AppointmentController extends Controller
     // Update the status of the appointment
     public function statusUpdate(Request $request)
     {
-        $appointment = Appointment::findOrFail($request->id); // Assuming you're sending the ID in the request body
+        $appointment = Appointment::findOrFail($request->id);  // Assuming you're sending the ID in the request body
 
         // Validate the new status
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:Pending,Accepted,Suspended',
+            'status' => 'required|string|in:1,2,3',
         ]);
 
         // Check if validation fails
