@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DesignationPositionController;
 use App\Http\Controllers\TaskHistoryController;
+use App\Http\Controllers\BacklinkController;
 
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'login']);
@@ -74,6 +75,15 @@ Route::post('/appointments/store', [AppointmentController::class, 'store']);
 Route::post('/appointments/update', [AppointmentController::class, 'update']);
 Route::post('/appointments/remove', [AppointmentController::class, 'Remove']);
 Route::post('/appointments/status', [AppointmentController::class, 'statusUpdate']);
+
+
+
+Route::post('/backlinks', [BacklinkController::class, 'fetchList']);         // Fetch a list of backlinks
+Route::post('/backlinks/store', [BacklinkController::class, 'store']);       // Store a new backlink
+Route::post('/backlinks/update', [BacklinkController::class, 'update']);     // Update an existing backlink
+Route::post('/backlinks/remove', [BacklinkController::class, 'remove']);     // Remove (soft delete) an existing backlink
+Route::post('/backlinks/status', [BacklinkController::class, 'statusUpdate']); // Update the status of an existing backlink
+Route::post('/backlinks/update-checked', [BacklinkController::class, 'updateChecked']); // Update checked status for multiple backlinks
 
 // Setting Routes
 Route::post('admin/settings/fetch', [SettingController::class, 'fetchSettings']);
