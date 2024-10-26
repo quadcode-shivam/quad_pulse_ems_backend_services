@@ -14,10 +14,21 @@ class AppointmentController extends Controller
     {
         $perPage = $request->input('limit', 10);  // Default to 10 if limit is not provided
         $currentPage = $request->input('page', 1);  // Default to page 1
-
+    
+        // Paginate the appointments
         $appointments = Appointment::paginate($perPage, ['*'], 'page', $currentPage);
-        return response()->json($appointments);
+    
+        $response = [
+            'data' => $appointments->items(), // Get the items on the current page
+            'total' => $appointments->total(), // Total number of appointments
+            'current_page' => $appointments->currentPage(), // Current page number
+            'last_page' => $appointments->lastPage(), // Last page number
+            'per_page' => $appointments->perPage(), // Items per page
+        ];
+    
+        return response()->json($response);
     }
+    
 
     // Store a newly created appointment in storage
     public function store(Request $request)
@@ -49,15 +60,13 @@ class AppointmentController extends Controller
     {
         $appointment = Appointment::findOrFail($request->id);  // Assuming you're sending the ID in the request body
 
-        // Validate incoming request data
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|string',
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:appointments,email,' . $appointment->id,
             'reason' => 'required|string|max:500',
             'date' => 'required|date',
-            'time' => 'required|date_format:H:i',  // Assuming time format is HH:mm
-            'status' => 'nullable|string|in:Pending,Accepted,Suspended',
+            'time' => 'required',  // Assuming time format is HH:mm
+            'status' => 'nullable|in:1,2,3',
         ]);
 
         // Check if validation fails
