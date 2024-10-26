@@ -65,7 +65,6 @@ class AppointmentController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        // Update the appointment
         $appointment->update($request->all());
 
         return response()->json($appointment);
