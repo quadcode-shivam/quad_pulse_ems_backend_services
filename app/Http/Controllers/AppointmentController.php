@@ -74,7 +74,7 @@ class AppointmentController extends Controller
     // Remove the specified appointment from storage
     public function remove(Request $request)
     {
-        $appointment = Appointment::findOrFail($request->id);  // Assuming you're sending the ID in the request body
+        $appointment = Appointment::findOrFail($request->id);  
         $appointment->delete();
 
         return response()->json(null, 204);
