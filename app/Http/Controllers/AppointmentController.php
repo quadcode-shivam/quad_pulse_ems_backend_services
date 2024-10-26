@@ -80,12 +80,9 @@ class AppointmentController extends Controller
         return response()->json(null, 204);
     }
 
-    // Update the status of the appointment
     public function statusUpdate(Request $request)
     {
-        $appointment = Appointment::findOrFail($request->id);  // Assuming you're sending the ID in the request body
-
-        // Validate the new status
+        $appointment = Appointment::findOrFail($request->id);  
         $validator = Validator::make($request->all(), [
             'status' => 'required|string|in:1,2,3',
         ]);
