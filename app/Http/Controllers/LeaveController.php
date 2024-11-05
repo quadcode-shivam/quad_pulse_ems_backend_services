@@ -100,32 +100,40 @@ class LeaveController extends Controller
     {
         try {
             $userId = $request->user_id;
-
+            $statusFilter = $request->status; // Get the status filter from the request
+    
             // Fetch the leave policy for the current employee
-            $leavePolicy = LeavePolicy::first();  // Adjust as necessary to get the correct leave policy
-
-            // Retrieve the last 5 leaves for the user, ordered by created_at descending
-            $leaves = Leave::where('employee_id', $userId)
-                ->latest()  // Order by created_at in descending order
-                ->take(5)  // Limit to 5 records
+            $leavePolicy = LeavePolicy::first(); // Adjust as necessary to get the correct leave policy
+    
+            // Build the query to retrieve the last 5 leaves for the user, filtered by status
+            $query = Leave::where('employee_id', $userId);
+    
+            // Apply status filter if provided
+            if ($statusFilter && in_array($statusFilter, ['pending', 'approved', 'suspended'])) {
+                $query->where('status', $statusFilter);
+            }
+    
+            // Retrieve the filtered leaves, ordered by created_at descending
+            $leaves = $query->latest() // Order by created_at in descending order
+                ->take(5) // Limit to 5 records
                 ->get();
-
+    
             // Get total leave taken from the leave table for the user
             $totalLeaveTaken = Leave::where('employee_id', $userId)->value('total_leaves') ?? 0;
-
+    
             // Count attendance records for the user with 'Late' and 'HalfDayPresent' statuses
             $totalHalf = Attendance::where('user_id', $userId)
-                ->whereIn('status', ['Late'])
+                ->where('status', 'Late')
                 ->count();
             $totalLate = Attendance::where('user_id', $userId)
-                ->whereIn('status', ['HalfDayPresent'])
+                ->where('status', 'HalfDayPresent')
                 ->count();
-
+    
             // Calculate remaining leaves
             $remainingLeaves = $leavePolicy->total_leave - $totalLeaveTaken;
             $remainingHalf = $leavePolicy->total_half_day - $totalHalf;
             $remainingLate = $leavePolicy->total_late - $totalLate;
-
+    
             return response()->json([
                 'total_records' => $leaves->count(),
                 'leaves' => $leaves,
@@ -144,6 +152,7 @@ class LeaveController extends Controller
             ], 400);
         }
     }
+    
 
     public function getLeaves()
     {
@@ -233,4 +242,35 @@ class LeaveController extends Controller
             ], 400);
         }
     }
+
+    public function removeLeave(Request $request)
+{
+    $validated = $request->validate([
+        'leave_id' => 'required|exists:leaves,id',
+    ]);
+
+    try {
+        // Find the leave record by ID
+        $leave = Leave::find($validated['leave_id']);
+
+        if ($leave) {
+            // Delete the leave record
+            $leave->delete();
+
+            return response()->json([
+                'message' => 'Leave removed successfully.',
+            ], 200);
+        } else {
+            return response()->json([
+                'error' => 'Leave not found.',
+            ], 404);
+        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Unable to remove leave. Please try again.',
+            'message' => $e->getMessage(),
+        ], 400);
+    }
+}
+
 }

@@ -41,6 +41,7 @@ Route::get('/designations-and-positions', [DesignationPositionController::class,
 
 // Leave Routes
 Route::post('/apply-leave', [LeaveController::class, 'applyLeave']);
+Route::post('/remove-leave', [LeaveController::class, 'removeLeave']);
 Route::post('/all-holiday', [LeaveController::class, 'getAllHolidays']);
 
 Route::post('/leaves/fetch', [LeaveController::class, 'getLeavesByUserId']);
