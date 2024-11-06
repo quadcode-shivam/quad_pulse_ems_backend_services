@@ -188,13 +188,14 @@ class LeaveController extends Controller
     {
         // Validate the request
         $validated = $request->validate([
+            'id' => 'required',  // Ensure user_id is valid
             'user_id' => 'required|exists:users,user_id',  // Ensure user_id is valid
             'status' => 'required|string|in:pending,approved,suspended',  // Validate status
         ]);
 
         try {
             // Find the leave request for the user
-            $leave = Leave::where('employee_id', $validated['user_id'])->first();  // Adjust this query based on your needs
+            $leave = Leave::where('id', $validated['id'])->first();  // Adjust this query based on your needs
 
             if (!$leave) {
                 return response()->json([

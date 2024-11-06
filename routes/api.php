@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\SalaryDistributionController;
 use App\Http\Controllers\LeavePolicyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CheckinController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CompanyPolicyController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\NotificationController;
@@ -86,8 +88,18 @@ Route::post('/backlinks/remove', [BacklinkController::class, 'remove']);     // 
 Route::post('/backlinks/status', [BacklinkController::class, 'statusUpdate']); // Update the status of an existing backlink
 Route::post('/backlinks/update-checked', [BacklinkController::class, 'updateChecked']); // Update checked status for multiple backlinks
 
+
+Route::post('/salary-distributions', [SalaryDistributionController::class, 'store']);
+Route::post('/salary-distributions/update/{id}', [SalaryDistributionController::class, 'update']);
+Route::post('/salary-distributions/delete/{id}', [SalaryDistributionController::class, 'destroy']);
+Route::post('/salary-distributions/fetch-by-user-id', [SalaryDistributionController::class, 'fetchByUserId']);
+Route::post('/salary-distributions/fetch-all', [SalaryDistributionController::class, 'fetchAll']);
+
 // Setting Routes
 Route::post('admin/settings/fetch', [SettingController::class, 'fetchSettings']);
 Route::get('admin/settings/{id}', [SettingController::class, 'show']);
 Route::put('admin/settings/{id}', [SettingController::class, 'update']);
 Route::delete('admin/settings/{id}', [SettingController::class, 'destroy']);
+
+
+Route::post('/dashboard-reports', [DashboardController::class, 'getDashboardReports']);
